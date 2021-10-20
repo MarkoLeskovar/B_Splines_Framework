@@ -17,15 +17,14 @@ if __name__ == "__main__":
     # PREAMBLE
     path_to_working_directory = os.getcwd()
     path_to_mri_images = 'dynSeq_data_2D/01_dynSeq'
-    path_to_output = 'output_dynSeq_data'
+    path_to_output = 'output'
 
     # Assemble the paths
     path_to_mri_images = os.path.join(path_to_working_directory, path_to_mri_images)
     path_to_output = os.path.join(path_to_working_directory, path_to_output)
 
     # Load the parameter file
-    parameter_file = '/home/mleskova/Workspaces/pycharm/B_Splines_Framework/dynSeq_data_2D/parameters_Bspline.txt'
-
+    parameter_file = os.path.join(path_to_working_directory, 'dynSeq_data_2D/parameters_Bspline.txt')
 
     # LOAD IMAGE DATA
     # Manually define image dimensions
@@ -38,18 +37,11 @@ if __name__ == "__main__":
     n_time_frames = [0, 5, 10, 15]
     n_frames = 4
 
-
-
-    # FILE OPTIONS
-    delete_files = False
-
-
-
+    ####################################################################################################################
     # Create a grid of pixel coordinates
     x_range = np.arange(0, im_dir_1, 1)
     y_range = np.arange(0, im_dir_2, 1)
     source_coordinates_x, source_coordinates_y = np.meshgrid(x_range, y_range, indexing='ij')
-
 
 
     # INITIALIZE VARIABLES
@@ -108,11 +100,6 @@ if __name__ == "__main__":
             # Call elastix
             os.system(elastix_command)
 
-            # # DELETE UNNECESSARY FILES
-            # if delete_files:
-            #     os.remove(os.path.join(path_to_elastix_output, 'result.0.mhd'))
-            #     os.remove(os.path.join(path_to_elastix_output, 'result.0.raw'))
-
         print("...done! t =", "{:.1f}".format(time.time() - t0), 's\n')
 
 
@@ -161,11 +148,10 @@ if __name__ == "__main__":
 
             # Name of the output file
             transform_parameters_file = os.path.join(path_to_output, 'elastix_result_' + time_frames[t] + '-' + time_frames[t + 1])
-            transform_parameters_file = transform_parameters_file + '/TransformParameters.0.txt'
-
+            transform_parameters_file = os.path.join(transform_parameters_file, 'TransformParameters.0.txt')
 
             path_to_output_file = os.path.join(path_to_output, 'transformix_result_' + time_frames[t] + '-' + time_frames[t + 1])
-            path_to_output_file = path_to_output_file + '/outputpoints.txt'
+            path_to_output_file = os.path.join(path_to_output_file, 'outputpoints.txt')
 
             # Read in the data
             file = open(path_to_output_file, 'r')
@@ -249,16 +235,6 @@ if __name__ == "__main__":
 
 
     ####################################################################################################################
-
-
-    #
-    # # DELETE UNNECESSARY FILES
-    # if delete_files:
-    #     os.remove(path_to_input_file)
-    #     os.remove(path_to_output_file)
-
-
-
     # Downsample the images for plotting
     downsampling = 15
     u_x_all = displacement_field_x[::downsampling, ::downsampling, : ]
@@ -267,17 +243,11 @@ if __name__ == "__main__":
     y_grid_all_target = target_coordinates_y[::downsampling, ::downsampling, :]
 
 
-
-
-
-
     # PLOTTING OPTIONS
-    plot_deformation_mesh = False
-    plot_deformation_vectors = False
+    plot_deformation_mesh = True
+    plot_deformation_vectors = True
     plot_volume_change_quad = True
     plot_jacobian = True
-
-
 
 
     # PLOTTING OF DEFORMATION MESH
@@ -325,7 +295,6 @@ if __name__ == "__main__":
 
             fig.savefig(os.path.join(path_to_output, 'deformation_mesh_' + time_frames[t] + '.png'), dpi=300)
             plt.close(fig)
-
 
 
     # PLOTING OF DEFORMATION VECTORS
@@ -377,8 +346,6 @@ if __name__ == "__main__":
         plt.close(fig)
 
 
-
-
     # PLOTTING OF VOLUME CHANGE
     if plot_volume_change_quad == True:
 
@@ -426,7 +393,6 @@ if __name__ == "__main__":
             plt.close(fig)
 
 
-
     # PLOTING OF DETERMINANT OF JACOBIAN
     if plot_jacobian == True:
         print('\n')
@@ -463,4 +429,3 @@ if __name__ == "__main__":
             # fig.show()
             fig.savefig(os.path.join(path_to_output, 'jacobian_map_' + time_frames[t] + '.png'), dpi=300)
             plt.close(fig)
-
